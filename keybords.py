@@ -14,4 +14,5 @@ default_keyboard = ReplyKeyboardMarkup(
     ], resize_keyboard=True
 )
 
-category_kb = get_sql_keyboard('category', 'category_name')
+category_kb = get_sql_keyboard(table='category', col='category_name', where=None)
+

@@ -1,3 +1,4 @@
+from typing import Iterable
 from main import bot, dp
 from config import admins_id
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
@@ -17,7 +18,7 @@ def get_buttons_list(list: list) -> list[KeyboardButton]:
         buttons_list.append(KeyboardButton(text=str(elem)))
     return buttons_list
 
-def get_chunked_list(__list: list, chunk_size: int) -> list[list]:
+def get_chunked(__list: list, chunk_size: int) -> list[list]:
     sub_list = []
     chunk_list = []
     while len(__list) >= chunk_size:
@@ -29,17 +30,17 @@ def get_chunked_list(__list: list, chunk_size: int) -> list[list]:
         chunk_list.append(__list)
     return chunk_list
 
-def get_sql_buttons(table, col):
+def get_sql_buttons(table: str, col: str, where: str | None) -> list[list[KeyboardButton]]:
     from sql import select
-    sql_list = select(table, col)
+    sql_list = select(table=table, col=col, where=where)
     sql_buttons = get_buttons_list(sql_list)
-    chunk_sql_buttons = get_chunked_list(sql_buttons, 2)
+    chunk_sql_buttons = get_chunked(sql_buttons, 2)
     return chunk_sql_buttons
 
 
-def get_sql_keyboard(table, col):
+def get_sql_keyboard(table: str, col: str, where: str | None) -> ReplyKeyboardMarkup:
     new_keyboard = ReplyKeyboardMarkup(
-    keyboard=get_sql_buttons(table, col), resize_keyboard=True
+    keyboard=get_sql_buttons(table=table, col=col, where=where), resize_keyboard=True
     )
     return new_keyboard
 
