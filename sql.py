@@ -1,13 +1,15 @@
 import sqlite3
-import re
+from utils import format_row_sql_select
 
-def select(col: str, table: str):
+
+def select(table: str, col: str):
     connect = sqlite3.connect('db.db')
     cursor = connect.cursor()
-    query = f'SELECT {col} FROM {table}'
+    query = f'SELECT DISTINCT {col} FROM {table}'
     cursor.execute(query)
     data = cursor.fetchall()
-    print(data)
+    sql_select = format_row_sql_select(data)
+    return sql_select
 
-if __name__ == '__main__':
-    select('category_name', 'category')
+
+print(select('category', 'category_name'))

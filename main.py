@@ -9,4 +9,4 @@ if __name__ == '__main__':
     from utils import bot_start_notif
 
     print('Bot started')
-    executor.start_polling(dp) # on_startup=bot_start_notif)
+    executor.start_polling(dp, on_startup=bot_start_notif)

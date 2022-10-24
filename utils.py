@@ -1,12 +1,8 @@
 from main import bot, dp
 from config import admins_id
-from aiogram.types import KeyboardButton
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
 async def bot_start_notif(dp) -> None:
-    '''
-    Функция отправляет сообщения о запуске бота всем админам в личный чат.
-    Админы должны быть прописаны в "admins_id"
-    '''
     for admin_id in admins_id:
         try:
             starting_text = 'Бот запущен. Мы готовы принимать заказы!'
@@ -14,29 +10,43 @@ async def bot_start_notif(dp) -> None:
         except Exception:
             print(f'Не удалось доставить сообщение администратору с id: {admin_id}')
 
-def get_chunked_list(list: list, chunk_size: int) -> list[list]:
-    '''
-    Функция разбивает список на список с подсписками нужной длины 
-    и возвращает "чанкнутый список".
-    '''
-    sub_list = []
-    chunk_list = []
-    while len(list) >= chunk_size:
-        for _ in range(chunk_size):
-            sub_list.append(list.pop(0))
-        chunk_list.append(sub_list)
-        sub_list = []
-    if len(list) > 0:
-        chunk_list.append(list)
-    return chunk_list
 
-def get_list_of_keyboard_buttons(_list: list[str] | list[int]) -> list[KeyboardButton]:
-    '''
-    Функция возвращает список кейборд батонов,
-    сделанный из списка списков
-    '''
+def get_buttons_list(list: list) -> list[KeyboardButton]:
     buttons_list = []
-    for elem in _list:
+    for elem in list:
         buttons_list.append(KeyboardButton(text=str(elem)))
     return buttons_list
 
+def get_chunked_list(__list: list, chunk_size: int) -> list[list]:
+    sub_list = []
+    chunk_list = []
+    while len(__list) >= chunk_size:
+        for _ in range(chunk_size):
+            sub_list.append(__list.pop(0))
+        chunk_list.append(sub_list)
+        sub_list = []
+    if len(__list) > 0:
+        chunk_list.append(__list)
+    return chunk_list
+
+def get_sql_buttons(table, col):
+    from sql import select
+    sql_list = select(table, col)
+    sql_buttons = get_buttons_list(sql_list)
+    chunk_sql_buttons = get_chunked_list(sql_buttons, 2)
+    return chunk_sql_buttons
+
+
+def get_sql_keyboard(table, col):
+    new_keyboard = ReplyKeyboardMarkup(
+    keyboard=get_sql_buttons(table, col), resize_keyboard=True
+    )
+    return new_keyboard
+
+def format_row_sql_select(sql_select):
+    import re
+    g = []
+    for string in sql_select:
+        a = re.sub('|\(|\'|\,|\)', '', str(string))
+        g.append(a)
+    return g
