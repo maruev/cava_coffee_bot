@@ -1,10 +1,10 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from utils import get_sql_keyboard
 
-default_keyboard = ReplyKeyboardMarkup(
+default_kb = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text='Меню'),
+            KeyboardButton(text='Сделать заказ'),
             KeyboardButton(text='О нас'),
         ],
         [
@@ -15,4 +15,3 @@ default_keyboard = ReplyKeyboardMarkup(
 )
 
 category_kb = get_sql_keyboard(table='category', col='category_name', where=None)
-

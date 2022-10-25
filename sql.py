@@ -14,6 +14,3 @@ def select(table: str, col: str, where: str | None):
     sql_select = format_row_sql_select(data)
     return sql_select
 
-w = 'Классика'
-print(select('subcategory', 'subcategory_name', where= f'category_name = "{w}"'))
-

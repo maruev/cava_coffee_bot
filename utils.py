@@ -51,3 +51,4 @@ def format_row_sql_select(sql_select):
         a = re.sub('|\(|\'|\,|\)', '', str(string))
         g.append(a)
     return g
+
