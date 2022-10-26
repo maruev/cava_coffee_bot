@@ -1,9 +1,9 @@
-from typing import Iterable
 from main import bot, dp
+from typing import Optional
 from config import admins_id
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 
-async def bot_start_notif(dp) -> None:
+async def adm_start_notif(dp) -> None:
     for admin_id in admins_id:
         try:
             starting_text = 'Бот запущен. Мы готовы принимать заказы!'
@@ -11,44 +11,56 @@ async def bot_start_notif(dp) -> None:
         except Exception:
             print(f'Не удалось доставить сообщение администратору с id: {admin_id}')
 
+def get_reply_keyboard(list: list[str], cols_num: int = 2) -> ReplyKeyboardMarkup:
+    buttons = _get_reply_buttons(list=list)
+    keyboard = _get_reply_keyboard(buttons=buttons, cols_num=cols_num)
+    return keyboard
 
-def get_buttons_list(list: list) -> list[KeyboardButton]:
+def get_inline_keyboard(list: list[str], cols_num: int = 3, callback_data: Optional[str] = None) -> InlineKeyboardMarkup:
+    buttons = _get_inline_buttons(list, callback_data=callback_data)
+    keyboard = _get_inline_keyboard(buttons=buttons, cols_num=cols_num)
+    return(keyboard)
+
+def _get_reply_buttons(list: list[str]) -> list[KeyboardButton]:
     buttons_list = []
     for elem in list:
-        buttons_list.append(KeyboardButton(text=str(elem)))
+        button = KeyboardButton(text=elem)
+        buttons_list.append(button)
     return buttons_list
 
-def get_chunked(__list: list, chunk_size: int) -> list[list]:
+def _get_inline_buttons(list: list[str], callback_data: Optional[str] = None) -> list[InlineKeyboardButton]:
+    buttons_list = []
+    for elem in list:
+        if callback_data == None:
+            c_d = elem
+        else:
+            c_d = callback_data
+        button = InlineKeyboardButton(text=elem, callback_data=c_d)
+        buttons_list.append(button)
+    return buttons_list
+
+def _get_reply_keyboard(buttons: list[KeyboardButton], cols_num: int = 2):
+    kb = ReplyKeyboardMarkup(
+       keyboard=_get_chunked(buttons, cols_num), 
+       resize_keyboard=True
+    )
+    return kb
+
+def _get_inline_keyboard(buttons: list[InlineKeyboardButton], cols_num: int = 3):
+    kb = InlineKeyboardMarkup(
+    inline_keyboard=_get_chunked(buttons, cols_num), 
+    )
+    return kb
+
+def _get_chunked(list: list, chunk_size: int) -> list[list]:
     sub_list = []
+    new_list = list.copy()
     chunk_list = []
-    while len(__list) >= chunk_size:
+    while len(new_list) >= chunk_size:
         for _ in range(chunk_size):
-            sub_list.append(__list.pop(0))
+            sub_list.append(new_list.pop(0))
         chunk_list.append(sub_list)
         sub_list = []
-    if len(__list) > 0:
-        chunk_list.append(__list)
+    if len(new_list) > 0:
+        chunk_list.append(new_list)
     return chunk_list
-
-def get_sql_buttons(table: str, col: str, where: str | None) -> list[list[KeyboardButton]]:
-    from sql import select
-    sql_list = select(table=table, col=col, where=where)
-    sql_buttons = get_buttons_list(sql_list)
-    chunk_sql_buttons = get_chunked(sql_buttons, 2)
-    return chunk_sql_buttons
-
-
-def get_sql_keyboard(table: str, col: str, where: str | None) -> ReplyKeyboardMarkup:
-    new_keyboard = ReplyKeyboardMarkup(
-    keyboard=get_sql_buttons(table=table, col=col, where=where), resize_keyboard=True
-    )
-    return new_keyboard
-
-def format_row_sql_select(sql_select):
-    import re
-    g = []
-    for string in sql_select:
-        a = re.sub('|\(|\'|\,|\)', '', str(string))
-        g.append(a)
-    return g
-

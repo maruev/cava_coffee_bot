@@ -6,7 +6,7 @@ dp = Dispatcher(bot)
 
 if __name__ == '__main__':
     from handlers import dp
-    from utils import bot_start_notif
+    from utils import adm_start_notif
 
     print('Bot started')
-    executor.start_polling(dp, on_startup=bot_start_notif)
+    executor.start_polling(dp, on_startup=adm_start_notif)
