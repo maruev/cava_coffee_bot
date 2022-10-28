@@ -11,31 +11,31 @@ async def adm_start_notif(dp) -> None:
         except Exception:
             print(f'Не удалось доставить сообщение администратору с id: {admin_id}')
 
-def get_reply_keyboard(list: list[str], cols_num: int = 2) -> ReplyKeyboardMarkup:
-    buttons = _get_reply_buttons(list=list)
+def get_reply_keyboard(list: list[tuple], cols_num: int = 2, buttons_text_index: int = 0, optional_buttons: Optional[list[KeyboardButton]] = None) -> ReplyKeyboardMarkup:
+    buttons = _get_reply_buttons(list=list, button_text_index=buttons_text_index)
+    if optional_buttons != None:
+        buttons.extend(optional_buttons)
     keyboard = _get_reply_keyboard(buttons=buttons, cols_num=cols_num)
     return keyboard
 
-def get_inline_keyboard(list: list[str], cols_num: int = 3, callback_data: Optional[str] = None) -> InlineKeyboardMarkup:
-    buttons = _get_inline_buttons(list, callback_data=callback_data)
+def get_inline_keyboard(list: list[tuple], cols_num: int = 3, buttons_text_index: int = 0, callback_data_index: int = 0, optional_buttons: Optional[list[InlineKeyboardButton]] = None) -> InlineKeyboardMarkup:
+    buttons = _get_inline_buttons(list=list, button_text_index=buttons_text_index, callback_data_index=callback_data_index)
+    if optional_buttons != None:
+        buttons.extend(optional_buttons)
     keyboard = _get_inline_keyboard(buttons=buttons, cols_num=cols_num)
-    return(keyboard)
+    return keyboard
 
-def _get_reply_buttons(list: list[str]) -> list[KeyboardButton]:
+def _get_reply_buttons(list: list[tuple], button_text_index: int) -> list[KeyboardButton]:
     buttons_list = []
     for elem in list:
-        button = KeyboardButton(text=elem)
+        button = KeyboardButton(text=elem[button_text_index])
         buttons_list.append(button)
     return buttons_list
 
-def _get_inline_buttons(list: list[str], callback_data: Optional[str] = None) -> list[InlineKeyboardButton]:
+def _get_inline_buttons(list: list[tuple], button_text_index: int, callback_data_index: int) -> list[InlineKeyboardButton]:
     buttons_list = []
     for elem in list:
-        if callback_data == None:
-            c_d = elem
-        else:
-            c_d = callback_data
-        button = InlineKeyboardButton(text=elem, callback_data=c_d)
+        button = InlineKeyboardButton(text=elem[button_text_index], callback_data=elem[callback_data_index])
         buttons_list.append(button)
     return buttons_list
 

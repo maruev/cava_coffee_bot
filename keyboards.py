@@ -1,4 +1,5 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from utils import _get_inline_buttons, _get_reply_buttons
 
 default_kb = ReplyKeyboardMarkup(
     keyboard=[
@@ -13,14 +14,6 @@ default_kb = ReplyKeyboardMarkup(
     ], resize_keyboard=True
 )
 
-# Клавиатура заглушка для карточки товара
-product_kb = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
-        InlineKeyboardButton('S\n150р', callback_data='text'),
-        InlineKeyboardButton('M\n250р', callback_data='text'),
-        InlineKeyboardButton('L\n350р', callback_data='text'),
-        ]
-    ]
-)
+inline_back_main_buttons = _get_inline_buttons([('Назад',), ('Главное меню',)], 0, 0) 
+reply_back_main_buttons = _get_reply_buttons([('Назад',), ('Главное меню',)], 0)
 

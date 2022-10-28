@@ -1,22 +1,14 @@
 import sqlite3
-from typing import Optional
+from utils import get_reply_keyboard
 
-def format_row_sql_select(sql_select):
-    import re
-    g = []
-    for string in sql_select:
-        a = re.sub('|\(|\'|\,|\)', '', str(string))
-        g.append(a)
-    return g
-
-def select(table: str, col: str, where: Optional[str] = None):
+def get_sql_response(request: str) -> list[tuple]:
     connect = sqlite3.connect('db.db')
     cursor = connect.cursor()
-    if where != None:
-        query = f'SELECT DISTINCT {col} FROM {table} WHERE {where}'
-    else:
-        query = f'SELECT DISTINCT {col} FROM {table}'
-    cursor.execute(query)
+    cursor.execute(request)
     data = cursor.fetchall()
-    sql_select = format_row_sql_select(data)
-    return sql_select
+    return data
+
+prices = get_sql_response(f'''SELECT "Размер: " || product_size_name || "\n Цена: " || product_price || ".00 руб"
+                                FROM price''')
+kb = get_reply_keyboard(prices)
+print(kb)
