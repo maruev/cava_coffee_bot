@@ -1,5 +1,4 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
-from utils import _get_inline_buttons, _get_reply_buttons
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
 
 default_kb = ReplyKeyboardMarkup(
     keyboard=[
@@ -14,6 +13,16 @@ default_kb = ReplyKeyboardMarkup(
     ], resize_keyboard=True
 )
 
-inline_back_main_buttons = _get_inline_buttons([('Назад',), ('Главное меню',)], 0, 0) 
-reply_back_main_buttons = _get_reply_buttons([('Назад',), ('Главное меню',)], 0)
+inline_default_kb = InlineKeyboardMarkup(
+    keyboard=[
+        [
+            InlineKeyboardButton(text='Сделать заказ', callback_data='Сделать заказ'),
+            InlineKeyboardButton(text='О нас', callback_data='_'),
+        ],
+        [
+            InlineKeyboardButton(text='Обратная связь', callback_data='_'),
+            InlineKeyboardButton(text='Контакты', callback_data='_'),
+        ],
+    ]
+)
 

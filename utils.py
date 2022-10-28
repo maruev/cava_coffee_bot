@@ -11,11 +11,14 @@ async def adm_start_notif(dp) -> None:
         except Exception:
             print(f'Не удалось доставить сообщение администратору с id: {admin_id}')
 
-def get_reply_keyboard(list: list[tuple], cols_num: int = 2, buttons_text_index: int = 0, optional_buttons: Optional[list[KeyboardButton]] = None) -> ReplyKeyboardMarkup:
+def get_reply_keyboard(list: list[tuple], cols_num: int = 2, buttons_text_index: int = 0, optional_buttons: Optional[list[KeyboardButton]] = None, opt_buttons_cols_num: Optional[int] = None) -> ReplyKeyboardMarkup:
     buttons = _get_reply_buttons(list=list, button_text_index=buttons_text_index)
-    if optional_buttons != None:
-        buttons.extend(optional_buttons)
     keyboard = _get_reply_keyboard(buttons=buttons, cols_num=cols_num)
+    if optional_buttons != None:
+        if opt_buttons_cols_num != None:
+            keyboard.keyboard.extend(_get_chunked((optional_buttons), chunk_size=opt_buttons_cols_num))
+        else:
+            keyboard.keyboard.append(optional_buttons)
     return keyboard
 
 def get_inline_keyboard(list: list[tuple], cols_num: int = 3, buttons_text_index: int = 0, callback_data_index: int = 0, optional_buttons: Optional[list[InlineKeyboardButton]] = None) -> InlineKeyboardMarkup:
