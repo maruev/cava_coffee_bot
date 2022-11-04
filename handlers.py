@@ -1,7 +1,7 @@
 from aiogram.types import Message, CallbackQuery
 from aiogram.dispatcher.filters import Command, Text
 from main import dp, bot
-from keyboards import default_kb
+from keyboards import default_kb, inline_kb
 from sql import get_sql_response
 from utils import get_reply_keyboard, get_inline_keyboard, _get_inline_buttons, _get_reply_buttons
 import re
@@ -233,18 +233,66 @@ async def product_menu(message: Message) -> None:
         button_text_index=0
     )
     
-    subcategory_keyboard = get_reply_keyboard(
+    products_kb = get_reply_keyboard(
         list=products, 
-        cols_num=2, 
+        cols_num=3, 
         optional_buttons=optional_buttons, 
         opt_buttons_cols_num=2
     )
 
     await message.answer(
         text=message.text, 
-        reply_markup=subcategory_keyboard
+        reply_markup=products_kb
     )
 
+# Хэндлер для возврата пользователя к списку товаров в выбранной подкатегории
+@dp.message_handler(
+    Text(
+        equals=[
+            f'Назад к {elem[0]}' for elem in get_sql_response(
+                'SELECT subcategory_name FROM subcategory'
+            )
+        ]
+    )
+)
+
+async def back_to_products_menu(message: Message) -> None:
+
+    subcategory = re.sub('Назад к ', '', message.text)
+
+    products = get_sql_response(
+        f'''
+        SELECT product_name, category_name
+        FROM product
+        JOIN subcategory 
+        ON product.subcategory_name = subcategory.subcategory_name
+        WHERE product.subcategory_name = "{subcategory}"
+        '''
+    )
+
+    optional_buttons = _get_reply_buttons(
+        list=[
+            (
+                f'Назад к {products[0][1]}',
+            ), 
+            (
+                'Главное меню',
+            )
+        ], 
+        button_text_index=0
+    )
+    
+    products_kb = get_reply_keyboard(
+        list=products, 
+        cols_num=3, 
+        optional_buttons=optional_buttons, 
+        opt_buttons_cols_num=2
+    )
+
+    await message.answer(
+        text=message.text, 
+        reply_markup=products_kb
+    )
 
 # Хэндлер для отправки пользователю карточки товара
 @dp.message_handler(
@@ -277,35 +325,47 @@ async def product_card(message: Message) -> None:
         '''
     )[0][0]
 
+    product_subcategory = get_sql_response(
+        f'''
+        SELECT subcategory_name
+        FROM product
+        WHERE product_name = "{message.text}"
+        LIMIT 1
+        '''
+    )[0][0]
+
     prices = get_sql_response(
         f'''
-        SELECT product_name || " " || product_size_name || 
-        "\n Цена: " || product_price || " руб" 
+        SELECT product_size_name || "\n" || product_price || " р." 
         FROM price
         WHERE product_name = "{message.text}"
         '''
     )
 
-    optional_buttons = _get_inline_buttons(
+    back_main_kb = get_reply_keyboard(
         list=[
             (
-                'Главное меню',
-            )
-        ], 
-        button_text_index=0, 
-        callback_data_index=0
+            f'Назад к {product_subcategory}',
+            ),
+            (
+            'Главное меню',
+            ),
+        ],
+        buttons_text_index=0,
     )
+
+    await message.answer(text=f'Открываю {message.text}', reply_markup=back_main_kb)
 
     price_keyboard = get_inline_keyboard(
         list=prices, 
-        cols_num=1, 
-        optional_buttons=optional_buttons
+        cols_num=3, 
     )
 
     await bot.send_photo(
         chat_id=message.from_user.id, 
         photo=product_photo, 
         reply_markup=price_keyboard, 
+        # reply_markup=inline_kb, 
         caption=product_description
     )
 
