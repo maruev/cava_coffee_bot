@@ -13,8 +13,13 @@ default_kb = ReplyKeyboardMarkup(
     ], resize_keyboard=True
 )
 
-inline_kb = InlineKeyboardMarkup(
+mock_inline_kb = InlineKeyboardMarkup(
     inline_keyboard=[
+        [
+            InlineKeyboardButton(text='-', callback_data='_'),
+            InlineKeyboardButton(text='1 шт.\n300 р.', callback_data='_'),
+            InlineKeyboardButton(text='+', callback_data='_'),
+        ],
         [
             InlineKeyboardButton(text='Молоко:\nКлассика', callback_data='_'),
             InlineKeyboardButton(text='Сироп:\nКарамель', callback_data='_'),
@@ -23,12 +28,7 @@ inline_kb = InlineKeyboardMarkup(
             InlineKeyboardButton(text='Доп. шот эспрессо:\nНет', callback_data='_'),
         ],
         [
-            InlineKeyboardButton(text='-', callback_data='_'),
-            InlineKeyboardButton(text='1 шт.\n300 р.', callback_data='_'),
-            InlineKeyboardButton(text='+', callback_data='_'),
-        ],
-        [
-            InlineKeyboardButton(text='Добавить в корзину', callback_data='_'),
+            InlineKeyboardButton(text='>>> Добавить в корзину <<<', callback_data='_'),
         ],
     ]
 )
