@@ -28,14 +28,14 @@ def get_inline_keyboard(list: list[tuple], cols_num: int = 3, buttons_text_index
     keyboard = _get_inline_keyboard(buttons=buttons, cols_num=cols_num)
     return keyboard
 
-def _get_reply_buttons(list: list[tuple], button_text_index: int) -> list[KeyboardButton]:
+def _get_reply_buttons(list: list[tuple], button_text_index: int = 0) -> list[KeyboardButton]:
     buttons_list = []
     for elem in list:
         button = KeyboardButton(text=elem[button_text_index])
         buttons_list.append(button)
     return buttons_list
 
-def _get_inline_buttons(list: list[tuple], button_text_index: int, callback_data_index: int) -> list[InlineKeyboardButton]:
+def _get_inline_buttons(list: list[tuple], button_text_index: int = 0, callback_data_index: int = 0) -> list[InlineKeyboardButton]:
     buttons_list = []
     for elem in list:
         button = InlineKeyboardButton(text=elem[button_text_index], callback_data=elem[callback_data_index])
